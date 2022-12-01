@@ -1,19 +1,20 @@
 import "./App.css";
-// import WorkFlow from "./components/WorkFlow";
-import SpaceSplit from "./components/SpaceSplit";
-// import DragDiv from "./components/DragBlock";
+import Setting from "./components/Setting";
+import SpaceStatus from "./components/SpaceStatus";
 import { SpaceProvider } from "./context/spaceContext";
+import { WorkProvider } from "./context/workflowContext";
 
 function App() {
   return (
     <SpaceProvider>
-      <div className="App">
-        <header className="App-header">
-          <h1 className="text-3xl font-bold underline">Hello world!</h1>
-          {/* <WorkFlow /> */}
-          <SpaceSplit />
-        </header>
-      </div>
+      <WorkProvider>
+        <div className="App">
+          <div className="flex flex-row items-center justify-center p-5">
+            <SpaceStatus />
+            <Setting />
+          </div>
+        </div>
+      </WorkProvider>
     </SpaceProvider>
   );
 }
