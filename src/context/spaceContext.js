@@ -21,6 +21,7 @@ class SpaceX {
     if (randomInit) this.randomInit();
   }
 
+  // random init the space with some blocks
   randomInit() {
     let count = Math.floor(Math.random() * 4);
     for (let i = 0; i < count; i++) {
@@ -31,6 +32,7 @@ class SpaceX {
     }
   }
 
+  // partition the space into a new block
   partition(size) {
     let last = this.space[this.space.length - 1];
     if (last.size < size) return;
@@ -56,7 +58,7 @@ class SpaceX {
     }
   }
 
-  //
+  // next-fit algorithm
   nextFit(size, pid) {
     let index = this.space.findIndex(
       (block) =>
