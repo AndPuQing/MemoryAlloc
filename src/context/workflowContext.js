@@ -41,7 +41,9 @@ class WorkFlow {
     // free the finished works space in the memory
     this.works.forEach((work, index) => {
       if (work.status === "finished") {
-        this.space.free(work.pid) && this.works.splice(index, 1);
+        this.space.free(work.pid);
+        this.works.splice(index, 1);
+        console.log(this.works);
         console.log("free", work.pid);
         flag = true;
       }
@@ -53,9 +55,12 @@ class WorkFlow {
           console.log("allocated space for", work.pid);
           work.status = "running";
           flag = true;
+        } else {
+          console.log("can't allocate space for", work.pid);
         }
       }
     });
+
     return flag;
   }
 }

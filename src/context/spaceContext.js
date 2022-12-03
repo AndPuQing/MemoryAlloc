@@ -56,6 +56,7 @@ class SpaceX {
         return this.fastFit(size, pid);
       default:
     }
+    this.space.sort((a, b) => a.head - b.head);
   }
 
   // next-fit algorithm
@@ -78,8 +79,6 @@ class SpaceX {
     newBlock.pid = pid;
     this.space[index].head += size;
     this.space.splice(index + 1, 0, newBlock);
-    this.space.sort((a, b) => a.head - b.head);
-    console.log(this.space);
     return true;
   }
 
