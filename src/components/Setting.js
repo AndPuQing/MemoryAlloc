@@ -12,7 +12,7 @@ import {
 import { WorkFlow, WorkFlowContext } from "../context/workflowContext";
 import { SpaceContext, SpaceX } from "../context/spaceContext";
 const Setting = () => {
-  const timerRef = useRef(null);
+  const timerRef = useRef();
   const { space, setSpace } = useContext(SpaceContext);
   const [workFlow, setWorkFlow] = useContext(WorkFlowContext);
   const onFinish = (values) => {
@@ -29,6 +29,8 @@ const Setting = () => {
         parseInt(work.end)
       );
     });
+    // first we need to clear the timer
+    clearInterval(timerRef.current);
     let time = 0;
     timerRef.current = setInterval(() => {
       if (NewworkFlow.update(time)) {
