@@ -87,7 +87,7 @@ const Setting = () => {
                 label: "临近适应",
               },
               {
-                value: "fast-fit",
+                value: "quick-fit",
                 label: "快速适应",
               },
             ]}
