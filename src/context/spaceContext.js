@@ -45,18 +45,27 @@ class SpaceX {
   alloc(size, mode, pid = null) {
     switch (mode) {
       case "first-fit":
-        return this.firstFit(size, pid);
+        this.firstFit(size, pid);
+        break;
       case "best-fit":
-        return this.bestFit(size, pid);
+        this.bestFit(size, pid);
+        break;
       case "worst-fit":
-        return this.worstFit(size, pid);
+        this.worstFit(size, pid);
+        break;
       case "next-fit":
-        return this.nextFit(size, pid);
+        this.nextFit(size, pid);
+        break;
       case "fast-fit":
-        return this.fastFit(size, pid);
+        this.fastFit(size, pid);
+        break;
       default:
     }
     this.space.sort((a, b) => a.head - b.head);
+    // remove the free blocks with size 0
+    this.space = this.space.filter((block) => block.size !== 0);
+    console.log(this.space);
+    return true;
   }
 
   // next-fit algorithm

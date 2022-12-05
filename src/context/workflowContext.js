@@ -1,5 +1,4 @@
-import React, { useState, createContext, useEffect } from "react";
-import { SpaceContext } from "./spaceContext";
+import React, { useState, createContext } from "react";
 
 export const WorkFlowContext = createContext();
 class Work {
@@ -26,13 +25,18 @@ class WorkFlow {
   }
 
   update(time) {
+    time = Number(time);
     let flag = false;
     this.works.forEach((work) => {
-      if (work.start <= time && work.end >= time) {
+      let { start, end } = work;
+      // convert to number
+      start = Number(start);
+      end = Number(end);
+      if (start < time && time < end) {
         work.status = "running";
-      } else if (work.end <= time) {
+      } else if (time > end) {
         work.status = "finished";
-      } else if (Math.abs(work.start - time) <= 1) {
+      } else if (Number(time - start) === 0) {
         work.status = "ready";
       } else {
         work.status = "wait";
