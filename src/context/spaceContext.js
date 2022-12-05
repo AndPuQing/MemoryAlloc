@@ -41,16 +41,17 @@ class SpaceX {
     this.space.push(newBlock);
   }
 
-  IS_POWER_OF_2=(x)=> (!((x)&((x)-1)))//是否是2的次方
+  IS_POWER_OF_2 = (x) => !(x & (x - 1)); // adjust the size is power of 2
 
-  fixsize=(size) => {
+  // resize the space to power of 2
+  fixsize = (size) => {
     size |= size >> 1;
     size |= size >> 2;
     size |= size >> 4;
     size |= size >> 8;
     size |= size >> 16;
-    return size+1;
-    }
+    return size + 1;
+  };
 
   // alloc a space for the given process
   alloc(size, mode, pid = null) {
@@ -103,11 +104,9 @@ class SpaceX {
   }
 
   //first-fit algorithm
-  firstFit(size, pid)
-  {
+  firstFit(size, pid) {
     let index = this.space.findIndex(
-      (block) =>
-        block.free && block.size >= size 
+      (block) => block.free && block.size >= size
     );
 
     if (index === -1) return false;
@@ -122,101 +121,76 @@ class SpaceX {
 
   // best-fit algorithm
   bestFit(size, pid) {
-    let temp=this.space;
-    temp.sort(
-        (a,b)=>{
-          return a.size-b.size;
-        }
+    this.space.sort((a, b) => {
+      return a.size - b.size;
+    });
+    let minIndex = this.space.findIndex(
+      (block) => block.free && block.size >= size
     );
-    let minIndex = temp.findIndex(
-        (block)=>
-            block.free && block.size>=size
-    )
-    if(minIndex===-1) return false;
-    let index=this.space.findIndex(
-        (block)=>
-            block.free && block.head===temp[minIndex].head
-    )
-    if (index === -1) return false;
+    if (minIndex === -1) return false;
 
-    this.space[index].size -= size;
-    let newBlock = new Block(this.space[index].head, size);
+    this.space[minIndex].size -= size;
+    let newBlock = new Block(this.space[minIndex].head, size);
     newBlock.free = false;
     newBlock.pid = pid;
-    this.space[index].head += size;
-    this.space.splice(index + 1, 0, newBlock);
+    this.space[minIndex].head += size;
+    this.space.splice(minIndex + 1, 0, newBlock);
     return true;
   }
 
   // worst-fit algorithm
   worstFit(size, pid) {
-    let temp = this.space;
-    temp.sort(
-        (a,b)=>{
-          return b.size-a.size;
-        }
+    this.space.sort((a, b) => {
+      return b.size - a.size;
+    });
+    let maxIndex = this.space.findIndex(
+      (block) => block.free && block.size >= size
     );
-    let minIndex = temp.findIndex(
-        (block)=>
-            block.free && block.size>=size
-    )
-    if(minIndex===-1) return false;
-    let index=this.space.findIndex(
-        (block)=>
-            block.free && block.head===temp[minIndex].head
-    )
-    if (index === -1) return false;
-
-    this.space[index].size -= size;
-    let newBlock = new Block(this.space[index].head, size);
+    if (maxIndex === -1) return false;
+    this.space[maxIndex].size -= size;
+    let newBlock = new Block(this.space[maxIndex].head, size);
     newBlock.free = false;
     newBlock.pid = pid;
-    this.space[index].head += size;
-    this.space.splice(index + 1, 0, newBlock);
+    this.space[maxIndex].head += size;
+    this.space.splice(maxIndex + 1, 0, newBlock);
     return true;
   }
 
   // quick-fit algorithm
-  quickFit(size,pid)
-  {
-    var size;
-    if(!this.IS_POWER_OF_2(size))
-      size=this.fixsize(size);
+  quickFit(size, pid) {
+    if (!this.IS_POWER_OF_2(size)) size = this.fixsize(size);
     console.log("++++++++");
 
-    var i=size;
-    while(i<=1024)
-    {
-      for(var j=0;j<=1024;j+=i)
-      {
-        var head =j;
+    var i = size;
+    while (i <= 1024) {
+      for (var j = 0; j <= 1024; j += i) {
+        let head = j;
         let index = this.space.findIndex(
           (block) =>
-            // block.free && block.size >= size 
-            block.free && head >= block.head && (head+size) <= (block.head+block.size)
+            block.free &&
+            head >= block.head &&
+            head + size <= block.head + block.size
         );
-        if (index === -1) 
-        {
-          // i=parseInt(i*2);
+        if (index === -1) {
           continue;
-        }
-        else
-        {
-            console.log("j"+j);
-            let newBlock = new Block(head, size);
-            newBlock.free = false;
-            newBlock.pid = pid;
-            // let index = this.space.findIndex((block) =>head >= block.head&&(head+size)<=(block.head+block.size));
-                
-            //the top block
-            let newBlock2 = new Block(head+size, this.space[index].head+this.space[index].size-head-size);
-            newBlock2.free = true;
-            //the button block
-            this.space[index].size = head-this.space[index].head;
-            
-            this.space.splice(index + 1, 0, newBlock);
-            this.space.splice(index + 2, 0, newBlock2);
-           console.log(this.space);
+        } else {
+          console.log("j" + j);
+          let newBlock = new Block(head, size);
+          newBlock.free = false;
+          newBlock.pid = pid;
+
+          //the top block
+          let newBlock2 = new Block(
+            head + size,
+            this.space[index].head + this.space[index].size - head - size
+          );
+          newBlock2.free = true;
+          //the button block
+          this.space[index].size = head - this.space[index].head;
+
+          this.space.splice(index + 1, 0, newBlock);
+          this.space.splice(index + 2, 0, newBlock2);
+          console.log(this.space);
 
           return true;
         }
@@ -226,7 +200,7 @@ class SpaceX {
 
     return false;
   }
-  
+
   // free the space for the given process
   free(pid) {
     let index = this.space.findIndex((block) => block.pid === pid);
