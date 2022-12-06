@@ -37,14 +37,11 @@ const Setting = () => {
     timerRef.current = setInterval(() => {
       timeNum++;
       setTime(timeNum);
-      if (NewworkFlow.update(timeNum)) {
+      if (NewworkFlow.update(timeNum) || NewworkFlow.defrag()) {
         setSpace({ ...space });
       }
       if (NewworkFlow.works.length === 0) {
         clearInterval(timerRef.current);
-      }
-      if (NewworkFlow.defrag()) {
-        setSpace({ ...space });
       }
       setWorkFlow({ ...NewworkFlow });
       if (timeNum > NewworkFlow.maxTime) {
