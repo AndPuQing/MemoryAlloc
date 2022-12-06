@@ -34,6 +34,7 @@ const Setting = () => {
     clearInterval(timerRef.current);
     setTime(0);
     let timeNum = 0;
+    let maxTime = NewworkFlow.maxTime();
     timerRef.current = setInterval(() => {
       timeNum++;
       setTime(timeNum);
@@ -45,7 +46,7 @@ const Setting = () => {
       //   clearInterval(timerRef.current);
       // }
       setWorkFlow({ ...NewworkFlow });
-      if (timeNum > NewworkFlow.maxTime) {
+      if (timeNum > maxTime) {
         clearInterval(timerRef.current);
       }
     }, 1000);
