@@ -35,7 +35,7 @@ class WorkFlow {
       end = Number(end);
       if (start < time && time < end) {
         work.status = "running";
-      } else if (time > end) {
+      } else if (time >= end) {
         work.status = "finished";
       } else if (Number(time - start) === 0) {
         work.status = "ready";
@@ -48,7 +48,6 @@ class WorkFlow {
       if (work.status === "finished") {
         this.space.free(work.pid);
         this.works.splice(index, 1);
-        console.log(this.works);
         console.log("free", work.pid);
         flag = true;
       }
