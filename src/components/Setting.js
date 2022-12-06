@@ -41,9 +41,9 @@ const Setting = () => {
       if (NewworkFlow.update(timeNum) || flag) {
         setSpace({ ...space });
       }
-      if (NewworkFlow.works.length === 0) {
-        clearInterval(timerRef.current);
-      }
+      // if (NewworkFlow.works.length === 0) {
+      //   clearInterval(timerRef.current);
+      // }
       setWorkFlow({ ...NewworkFlow });
       if (timeNum > NewworkFlow.maxTime) {
         clearInterval(timerRef.current);
