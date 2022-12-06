@@ -96,12 +96,12 @@ class SpaceX {
       );
     }
     if (index === -1) return false;
-    this.lastPointer = this.space[index].head;
     this.space[index].size -= size;
     let newBlock = new Block(this.space[index].head, size);
     newBlock.free = false;
     newBlock.pid = pid;
     this.space[index].head += size;
+    this.lastPointer = this.space[index].head;
     this.space.splice(index + 1, 0, newBlock);
     return true;
   }

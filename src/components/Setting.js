@@ -37,7 +37,8 @@ const Setting = () => {
     timerRef.current = setInterval(() => {
       timeNum++;
       setTime(timeNum);
-      if (NewworkFlow.update(timeNum) || NewworkFlow.defrag()) {
+      let flag = NewworkFlow.defrag();
+      if (NewworkFlow.update(timeNum) || flag) {
         setSpace({ ...space });
       }
       if (NewworkFlow.works.length === 0) {
