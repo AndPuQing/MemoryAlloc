@@ -19,6 +19,7 @@ class WorkFlow {
     this.maxTime = () => Math.max(...this.works.map((work) => work.end));
     this.add = this.add.bind(this);
     this.update = this.update.bind(this);
+    this.defrag = this.defrag.bind(this);
   }
   add(pid, size, start, end) {
     this.works.push(new Work(pid, size, start, end));
@@ -66,6 +67,11 @@ class WorkFlow {
     });
 
     return flag;
+  }
+
+  // Debris recycling
+  defrag() {
+    return this.space.defrag();
   }
 }
 

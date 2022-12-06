@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -15,6 +15,7 @@ const Setting = () => {
   const timerRef = useRef();
   const { space, setSpace } = useContext(SpaceContext);
   const [workFlow, setWorkFlow] = useContext(WorkFlowContext);
+  let [time, setTime] = useState(0);
   const onFinish = (values) => {
     console.log("Received values of form:", values);
     const { size, mode, randomInit, workflows } = values;
@@ -31,17 +32,24 @@ const Setting = () => {
     });
     // first we need to clear the timer
     clearInterval(timerRef.current);
-    let time = 0;
+    setTime(0);
+    let timeNum = 0;
     timerRef.current = setInterval(() => {
-      if (NewworkFlow.update(time)) {
+      if (NewworkFlow.update(timeNum)) {
+        setSpace({ ...space });
+      }
+      if (NewworkFlow.works.length === 0) {
+        clearInterval(timerRef.current);
+      }
+      if (NewworkFlow.defrag()) {
         setSpace({ ...space });
       }
       setWorkFlow({ ...NewworkFlow });
-      time++;
-      console.log(time);
-      if (time > NewworkFlow.maxTime) {
+      if (timeNum > NewworkFlow.maxTime) {
         clearInterval(timerRef.current);
       }
+      timeNum++;
+      setTime(timeNum);
     }, 1000);
   };
 
@@ -58,7 +66,7 @@ const Setting = () => {
         </Form.Item>
 
         <Form.Item
-          label="随机初始化内存"
+          label="随机 lock 内存"
           name="randomInit"
           valuePropName="checked"
         >
@@ -160,6 +168,9 @@ const Setting = () => {
           </Button>
         </Form.Item>
       </Form>
+      <div className="flex flex-row items-center justify-center">
+        系统当前计数：{time}
+      </div>
     </div>
   );
 };

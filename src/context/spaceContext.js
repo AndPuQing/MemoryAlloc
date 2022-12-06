@@ -21,24 +21,27 @@ class SpaceX {
     if (randomInit) this.randomInit();
   }
 
-  // random init the space with some blocks
+  // random lock some small blocks
   randomInit() {
-    let count = Math.floor(Math.random() * 4);
-    for (let i = 0; i < count; i++) {
-      let size = Math.floor(
-        Math.random() * this.space[this.space.length - 1].size
+    for (let i = 0; i < 3; i++) {
+      let randomSize = Math.floor(Math.random() * 90) + 10;
+      let randomHead = Math.floor(Math.random() * (this.size - randomSize));
+      // Find the block that can be allocated
+      let index = this.space.findIndex(
+        (block) =>
+          block.free &&
+          randomHead >= block.head &&
+          randomHead + randomSize <= block.head + block.size
       );
-      this.partition(size);
+      if (index === -1) continue;
+      // split the block
+      let block = this.space[index];
+      let newBlock = new Block(block.head, randomHead - block.head);
+      this.space[index].head = randomHead + randomSize;
+      this.space[index].size = block.size - newBlock.size - randomSize;
+      let newBlock2 = new Block(randomHead, randomSize, false);
+      this.space.splice(index, 1, newBlock, newBlock2, this.space[index]);
     }
-  }
-
-  // partition the space into a new block
-  partition(size) {
-    let last = this.space[this.space.length - 1];
-    if (last.size < size) return;
-    last.size -= size;
-    let newBlock = new Block(last.head + last.size, size);
-    this.space.push(newBlock);
   }
 
   IS_POWER_OF_2 = (x) => !(x & (x - 1)); // adjust the size is power of 2
@@ -55,6 +58,7 @@ class SpaceX {
 
   // alloc a space for the given process
   alloc(size, mode, pid = null) {
+    this.space.sort((a, b) => a.head - b.head);
     switch (mode) {
       case "first-fit":
         this.firstFit(size, pid);
@@ -76,7 +80,6 @@ class SpaceX {
     this.space.sort((a, b) => a.head - b.head);
     // remove the free blocks with size 0
     this.space = this.space.filter((block) => block.size !== 0);
-    console.log(this.space);
     return true;
   }
 
@@ -108,7 +111,6 @@ class SpaceX {
     let index = this.space.findIndex(
       (block) => block.free && block.size >= size
     );
-
     if (index === -1) return false;
     this.space[index].size -= size;
     let newBlock = new Block(this.space[index].head, size);
@@ -207,19 +209,31 @@ class SpaceX {
     if (index === -1) return false;
     this.space[index].free = true;
     this.space[index].pid = null;
-    // this.merge(index);
     return true;
   }
 
-  // merge the block with its next block
-  merge(index) {
-    if (index === this.space.length - 1) return;
-    let block = this.space[index];
-    let next = this.space[index + 1];
-    if (block.free && next.free) {
-      block.size += next.size;
-      this.space.splice(index + 1, 1);
+  // Debris recycling
+  defrag() {
+    let flag = false;
+    let freeblockIndex = [];
+    for (let i = 0; i < this.space.length; i++) {
+      if (this.space[i].free) {
+        freeblockIndex.push(i);
+      }
     }
+    if (freeblockIndex.length <= 1) return flag;
+    // Merge only contiguous free blocks
+    for (let i = 0; i < freeblockIndex.length; i++) {
+      if (freeblockIndex[i] + 1 === freeblockIndex[i + 1]) {
+        this.space[freeblockIndex[i]].size +=
+          this.space[freeblockIndex[i + 1]].size;
+        this.space.splice(freeblockIndex[i + 1], 1);
+        freeblockIndex.splice(i + 1, 1);
+        i--;
+        flag = true;
+      }
+    }
+    return flag;
   }
 
   // resize the space for the given block
